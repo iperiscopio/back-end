@@ -3,10 +3,12 @@ AddDefaultCharset UTF-8
 </FilesMatch>
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase /
+RewriteBase /api/
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /index.html [L]
+RewriteRule . /api/index.php [L]
 </IfModule>
+
+
 
