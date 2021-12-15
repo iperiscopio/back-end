@@ -6,8 +6,10 @@
 
     $model = new User();
 
-
+    // Validation:
     function validateLogin( $data ) {
+        
+        // sanitization:
         foreach($data as $key => $value) {
             $data[$key] = trim(htmlspecialchars(strip_tags($value)));
         }
@@ -36,9 +38,10 @@
             $user = $model->login($data);
 
             if(empty( $user )) {
-                http_response_code(400);
-                die('{"message":"Incorrect Login Information"}');
+                http_response_code(422);
+                die('{"message":"Invalid email or password"}');
             }
+            
 
             // criar jwt
             $payload = [
@@ -54,18 +57,18 @@
 
             
             header("X-Auth-Token: " . $token);
-
-            echo '{"X-Auth-Token":"' . $token . '"}';
-
+            // echo '{"X-Auth-Token":"' . $token . '"}';
 
             http_response_code(202);
-            echo json_encode( $user );
+
+            // echo json_encode( $user );
+
             die('{"message":"You are now logged in"}');
 
 
         } else {
             http_response_code(400);
-            echo '{"message":"Wrong Information"}';
+            echo '{"message":"Wrong information"}';
         }
         
         

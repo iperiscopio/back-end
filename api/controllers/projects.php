@@ -114,8 +114,9 @@
     } elseif($_SERVER["REQUEST_METHOD"] === "POST") { // falta validações images quando upload
 
         $data = json_decode( file_get_contents("php://input"), TRUE );
+        print_r($data);
             
-        if( $data ) {
+        if( validatorPost($data) ) {
         
             $model->createProject( $data, $data["images"] );
     

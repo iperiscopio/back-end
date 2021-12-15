@@ -6,9 +6,10 @@
 
     $model = new User();
 
-    // validation and sanitization:
+    // validation:
     function validation( $data ) {
-
+        
+        // sanitization:
         foreach($data as $key => $value) {
             $data[$key] = trim(htmlspecialchars(strip_tags($value)));
         }
@@ -42,9 +43,9 @@
 
     
         $data = json_decode( file_get_contents("php://input"), true );
-        print_r($data);
+        // print_r($data);
 
-        if( validation( $data )) {
+        if( validation( $data ) ) {
             
             $newUser = $model->register( $data );
 

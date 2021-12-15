@@ -22,8 +22,6 @@
 
             $user = $query->fetch( PDO::FETCH_ASSOC );
 
-            print_r($user);
-
             if( 
                 !empty($user) &&
                 password_verify($data["password"], $user["password"])
@@ -31,7 +29,7 @@
                 return $user;
             }
 
-            return [];
+            return ;
         }
 
 
