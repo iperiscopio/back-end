@@ -26,15 +26,20 @@
 
     // Validate and sanitize:
     function validatorPost($data) {
-
+        
         // foreach($data as $key => $value) {
         //     $data[$key] = trim(htmlspecialchars(strip_tags($value))); 
         // }
 
+        foreach($data["images"] as $key => $value) {
+            $data[$key] = base64_decode($value); 
+        }
+        $file = file_put_contents($filename, $data["images"]);
+        print_r($file);
         // $finfo = finfo_open(FILEINFO_MIME_TYPE);
         // $detected_format = finfo_file($finfo, $_FILES["images"]["tmp_name"]);
 
-        //array de formatos de ficheiros aceites neste form
+        // // array de formatos de ficheiros aceites neste form
         // $allowed_files_formats = [
         //     "jpg" => "image/jpeg",
         //     "png" => "image/png",
@@ -55,11 +60,11 @@
             mb_strlen($data["location"]) <= 120 &&
             mb_strlen($data["description"]) >= 3 &&
             mb_strlen($data["description"]) <= 10000 &&
-            is_array($data["images"]) 
-            // $_FILES["images"]["error"] === 0 &&
-            // $_FILES["images"]["size"] > 0 &&
-            // $_FILES["images"]["error"] < 10000000 &&
-            // in_array($detected_format, $allowed_files_formats)
+            is_array($data["images"]) &&
+            $_FILES["images"]["error"] === 0 &&
+            $_FILES["images"]["size"] > 0 &&
+            $_FILES["images"]["size"] < 10000000 &&
+            in_array($detected_format, $allowed_files_formats)
 
         ) {
 
@@ -67,7 +72,7 @@
             
             // $extension = "." . array_search($detected_format, $allowed_files_formats);
 
-            // move_uploaded_file($_FILES["images"]["tmp_name"], "C:/xampp/htdocs/api/images/" . $ilename.$extension );
+            // move_uploaded_file($_FILES["images"]["tmp_name"], "../images/" . $ilename.$extension );
 
             return true;
 
@@ -204,3 +209,5 @@
         die('{"message": "Method Not Allowed"}');
 
     }
+
+   

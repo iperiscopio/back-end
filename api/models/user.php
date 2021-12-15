@@ -35,6 +35,7 @@
 
         // REGISTER:
         public function register( $user ) {
+
             $query = $this->db->prepare("
                 INSERT INTO users
                 (first_name, last_name, email, password, username)
@@ -49,6 +50,33 @@
                 $user["username"],
             ]);
 
-            return $newUser ? $this->db->lastInsertId() : 0; 
+
+            return $newUser ? $this->db->lastInsertId() : 0;
+
+            
+   
+        }
+
+        public function emailValidation( $email ) {
+
+            $query = $this->db->prepare("
+                SELECT email
+                FROM users
+                WHERE email = ?
+            ");
+
+            $query->execute([ $email["email"] ]);
+
+            $availableEmail = $query->fetch();
+
+            if( !$availableEmail ) {
+
+                return true;
+                
+            } else {
+
+                return false;
+            }
+
         }
     }

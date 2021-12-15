@@ -43,19 +43,30 @@
 
     
         $data = json_decode( file_get_contents("php://input"), true );
-        // print_r($data);
 
         if( validation( $data ) ) {
-            
-            $newUser = $model->register( $data );
 
-            if(empty( $newUser )) {
-                http_response_code(400);
-                die('{"message":"Information not filled correctly"}');
+            $validEmail = $model->emailValidation( $data );
+
+            if( $validEmail ) {
+                $newUser = $model->register( $data );
+
+                if(empty( $newUser )) {
+                    http_response_code(400);
+                    die('{"message":"Information not filled correctly"}');
+                }
+                
+                http_response_code(202);
+                die('{"message":"You are now a registered user"}');
+
+
+            } else {
+
+                http_response_code(409);
+                die('{"message":"This email is already registered"}');
+
             }
-            
-            http_response_code(202);
-            die('{"message":"You are now a registered user"}');
+    
             
         } else {
 
