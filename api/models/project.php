@@ -3,9 +3,72 @@
     require_once("config.php");
 
     class Project extends Config {
+
+        //Projects Count:
+        public function count() {
+
+            $query = $this->db->prepare("
+                SELECT 
+                    COUNT(projects.project_id) AS totalProjects,
+                    COUNT(images.image_id) AS totalImages
+                FROM 
+                    projects
+                LEFT JOIN 
+                    images USING(project_id)                   
+            ");
+
+            $query->execute();
+
+            return $query->fetchAll( PDO::FETCH_ASSOC );
+        }
+
+
+        //GET ALL PROJECTS IN DB:
+        public function getAllProjects() {
+
+            $query = $this->db->prepare("
+                SELECT 
+                    projects.project_id, 
+                    projects.title,
+                    projects.location,
+                    projects.description,
+                    images.project_id AS images,
+                    images.image_id,
+                    images.image
+                FROM 
+                    projects
+                LEFT JOIN 
+                    images USING(project_id)                   
+            ");
+
+            $query->execute();
+
+            $results = $query->fetchAll( PDO::FETCH_ASSOC );
+
+            $projects = [];
+            $projectImages = [];
+            $key = 0;
+
+            foreach($results as $result => $value){
+	
+                if(!in_array($value["project_id"], $projectImages)){
+                    ++$key;
+                    $projects[$key]["project_id"] = $value["project_id"];
+                    $projects[$key]["title"] = $value["title"];
+                    $projects[$key]["location"] = $value["location"];
+                    $projects[$key]["description"] = $value["description"];
+                }
+                if(!empty($value["image"])) {
+                    $projects[$key]["images"][] = $value["image"];
+                }
+                $projectImages[] = $value["project_id"];
+                
+            }
+
+            return $projects;
+        }
         
-        
-        // GET ALL PROJECTS: (confirma funcionar)
+        // GET ALL PROJECTS WITH IMAGES: 
         public function getProjects() {
 
             $query = $this->db->prepare("
@@ -156,36 +219,39 @@
             ]);
 
             
+            if(!empty($data["images"])) {
+                // query to delete images table with id
+                if( $updatedProject ) {
 
-            // query to delete images table with id
-            if( $updatedProject ) {
+                    $query = $this->db->prepare("
+                        DELETE FROM images
+                        WHERE project_id = ?
+                    ");
 
-                $query = $this->db->prepare("
-                    DELETE FROM images
-                    WHERE project_id = ?
-                ");
-
-                $deletedImages = $query->execute([ $id ]);
-                
-                // query to insert updated images to table
-                if( $deletedImages ) {
+                    $deletedImages = $query->execute([ $id ]);
                     
-                    foreach( $data["images"] as $image) {
-                        $query = $this->db->prepare("
-                            INSERT INTO images
-                            (project_id, image)
-                            VALUES(?, ?)
-                        ");
+                    // query to insert updated images to table
+                    if( $deletedImages ) {
+                        
+                        foreach( $data["images"] as $image) {
+                            $query = $this->db->prepare("
+                                INSERT INTO images
+                                (project_id, image)
+                                VALUES(?, ?)
+                            ");
 
-                        $query->execute([
-                            $id,
-                            $image
-                        ]);
+                            $query->execute([
+                                $id,
+                                $image
+                            ]);
+                        }
+
                     }
-
+                
                 }
-            
             }
+            
+            return $updatedProject;
 
 
 
@@ -202,17 +268,20 @@
 
             $deletedProject = $query->execute([ $id ]);
 
-            if( $deletedProject ) {
+            if(!empty($data["images"])) {
+                
+                if( $deletedProject ) {
 
-                $query = $this->db->prepare("
-                    DELETE FROM images
-                    WHERE project_id = ?
-                ");
+                    $query = $this->db->prepare("
+                        DELETE FROM images
+                        WHERE project_id = ?
+                    ");
 
-                $query->execute([ $id ]);
+                    $query->execute([ $id ]);
+                }
             }
 
-            
+            return $deletedProject;
 
         }
 

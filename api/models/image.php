@@ -117,6 +117,18 @@
 
         }
 
+
+        //DELETE ALL IMAGES FROM A PROJECT:
+        public function deleteImages( $id ) {
+            $query = $this->db->prepare("
+                    DELETE FROM images
+                    WHERE project_id = ?
+                ");
+
+            return $query->execute([ $id ]);
+        }
+        
+
         // DELETE AN IMAGE FROM A PROJECT: 
         public function deleteImageFromProject( $project_id, $image_id ) {
 
@@ -133,27 +145,3 @@
 
         }
     } 
-    
-
-    /*
-    <!-- (A) UPLOAD FORM -->
-    <form method="post" enctype="multipart/form-data">
-    <input type="file" name="upload" accept=".png,.gif,.jpg,.webp" required>
-    <input type="submit" name="submit" value="Upload Image">
-    </form>
-
-    <?php
-    // (B) SAVE IMAGE INTO DATABASE
-    if (isset($_FILES["upload"])) {
-    try {
-        // (B1) CONNECT To DATABASE
-        require "2-connect-db.php";
-
-        // (B2) READ IMAGE FILE & INSERT
-        $stmt = $pdo->prepare("INSERT INTO `images` (`img_name`, `img_data`) VALUES (?,?)");
-        $stmt->execute([$_FILES["upload"]["name"], file_get_contents($_FILES["upload"]["tmp_name"])]);
-        echo "OK";
-    } catch (Exception $ex) { echo $ex->getMessage(); }
-    }
-    ?>
-    */

@@ -21,7 +21,8 @@
         "register",
         "login",
         "images",
-        "projects"
+        "projects",
+        "projectManager"
     ];
 
     $controller = $url_parts[2];
