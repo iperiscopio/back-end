@@ -157,7 +157,7 @@
             return $project;
         }
 
-        // POST A PROJECT: (confirma funcionar - falta guardar fotos directorio especifico)
+        // POST A PROJECT: 
         public function createProject( $data ) {
 
             $query = $this->db->prepare("
@@ -195,7 +195,7 @@
 
         }
 
-        // UPDATE A PROJECT: (confirma funcionar - falta guardar fotos directorio especifico)
+        // UPDATE A PROJECT: 
         public function updateProject( $id, $data ) {
 
             // query to update projects table

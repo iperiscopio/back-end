@@ -191,7 +191,7 @@
 
 
 
-    } else if($_SERVER["REQUEST_METHOD"] === "DELETE") { // deleta todos os projectos, mesmo que não existam na DB
+    } else if($_SERVER["REQUEST_METHOD"] === "DELETE") { 
 
         $data = json_decode( file_get_contents("php://input"), TRUE );
         
