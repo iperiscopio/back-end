@@ -18,11 +18,12 @@
     $url_parts = explode("/", $_SERVER["REQUEST_URI"]);
 
     $controllers = [
-        "register",
+        "accountsManager",
         "login",
         "images",
         "projects",
-        "projectManager"
+        "projectManager",
+        "siteImages"
     ];
 
     $controller = $url_parts[2];

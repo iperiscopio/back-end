@@ -1,37 +1,14 @@
-<?php
+  <?php
 
     require("models/project.php");
 
     $model = new Project();
 
-    // User authentication through JWT
-    // if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
-        
-    //     $userId = $model->routeRequireValidation();
-
-    //     if( empty( $userId ) ) {
-    //         http_response_code(401);
-    //         return '{"message":"Wrong or missing Auth Token"}';
-    //     } 
-
-    //     if( 
-    //         !empty($id) &&
-    //         empty( $model->getProjectByUser($id, $userId) )
-    //     ) {
-    //         http_response_code(403);
-    //         die('{"message":"You do not have permission to perform this action"}');
-    //     }
-    
-    // }
 
     // Validate and sanitize:
     function validatorPost($data) {
         
-        $imagesArray;
-        $textArray;
-
         $target_dir = "../images/";
-        // $finfo = finfo_open(FILEINFO_MIME_TYPE);
         
         // allowed image formats array
         $allowed_files_formats = [
@@ -41,63 +18,6 @@
             "webp" => "image/webp",
             "svg+xml" => "image/svg"
         ];
-
-        $decoded_image;
-        $mime_type;
-
-        //sanitize and decode each image in array
-        for( $i = 0; $i < count($data["images"]); $i++ ) {
-
-            $sanitize = trim(htmlspecialchars(strip_tags($data["images"][$i])));
-            $replace = str_replace("data:image/jpeg;base64,", "", $sanitize);
-            $decoded_image = base64_decode($replace);
-            $data["images"][$i] = $decoded_image;
-
-            $finfo = finfo_open();
-            $mime_type = finfo_buffer($finfo, $data["images"][$i], FILEINFO_MIME_TYPE);
-        
-            $detected_format = finfo_file($finfo, $data["images"][$i]);
-            
-        }
-        
-        
-        if ($data["images"]) {
-            
-            //validate each image
-            foreach( $data["images"] as $image) {            
-                
-                if( $image ) {
-                    var_dump($finfo);
-                    $detected_format = finfo_file($finfo, $image);
-                    $size = getimagesizefromstring($image);
-                    
-                    if(
-                        // $image.error === 0 &&
-                        $size > 0 &&
-                        $size < 10000000
-                    ) {
-                        return $imagesArray = true;
-                    } 
-                    else {
-                        return false;
-                    }
-                }
-
-                if(in_array($detected_format, $allowed_files_formats)) {
-    
-                    $filename = $data["title"] . "_" . bin2hex(random_bytes(4));
-                    
-                    $extension = "." . array_search($detected_format, $allowed_files_formats);
-
-                    $file_dir = $target_dir . uniqid() . '.' . $extension;
-    
-                    file_put_contents($file_dir, $image);
-                    move_uploaded_file($image . $target_dir . $filename.$extension );
-                    
-                }
-            }
-
-        }
         
         //sanitize texts
         if( $data ) {
@@ -119,21 +39,45 @@
             mb_strlen($data["description"]) >= 3 &&
             mb_strlen($data["description"]) <= 10000
         ) {
+            //sanitize and decode each image in array
+            for( $i = 0; $i < count($data["images"]); $i++ ) {
 
-            return $textArray = true;
+                $sanitize = trim(htmlspecialchars(strip_tags($data["images"][$i])));
+                $replace = str_replace("data:image/jpeg;base64,", "", $sanitize);
+                $size = strlen($replace);
 
-        }
+                if( $size > 0 &&
+                    $size < 10000000
+                ) {
 
-        // check if all validation returned true
-        if($textArray && $imagesArray) {
+                    $decoded_image = base64_decode($replace);
+                    $data["images"][$i] = $decoded_image;
 
-            return true;
+                    $finfo = new finfo(FILEINFO_MIME_TYPE);
+
+                    $detected_format = $finfo->buffer($data["images"][$i]);
+
+                    if(in_array($detected_format, $allowed_files_formats)) {
+        
+                        $filename = $data["title"] . "_" . bin2hex(random_bytes(4));
+                        
+                        $extension = "." . array_search($detected_format, $allowed_files_formats);
+        
+                        $file_dir = $target_dir . $filename . $extension;
+        
+                        file_put_contents($file_dir, $data["images"][$i]);
+                        
+                    }
+                }
+                $data["images"][$i] = $file_dir;
+
+                var_dump($data); //<---- nomes actualizados em cada imagem
+                
+                return $data;
+            }
             
-        } else {
-
-            return false;
         }
-
+        return false;
 
     };
 
@@ -172,13 +116,14 @@
     
          
 
-    } elseif($_SERVER["REQUEST_METHOD"] === "POST") { // falta validações images quando upload
+    } elseif($_SERVER["REQUEST_METHOD"] === "POST") { 
 
         $data = json_decode( file_get_contents("php://input"), TRUE );
         
-            
         if( validatorPost($data) ) {
-        
+            var_dump($data);// <------ nomes base64 em cada imagem
+
+
             $model->createProject( $data, $data["images"] );
     
             http_response_code(202);
@@ -198,7 +143,8 @@
         $data = json_decode( file_get_contents("php://input"), TRUE );
 
         if( 
-            !empty($id)
+            !empty($id) &&
+            validatorPost($data)
         ) {
 
             $updateProject = $model->updateProject( $id, $data );
@@ -225,7 +171,7 @@
 
 
 
-    } else if($_SERVER["REQUEST_METHOD"] === "DELETE") { 
+    } else if($_SERVER["REQUEST_METHOD"] === "DELETE") { // deleta todos os projectos, mesmo que não existam na DB
 
         $data = json_decode( file_get_contents("php://input"), TRUE );
         
@@ -233,7 +179,6 @@
 
             $removeProject = $model->deleteProject($id);
             
-
             if( $removeProject ) { 
 
                 http_response_code(202);
@@ -264,4 +209,3 @@
 
     }
 
-   

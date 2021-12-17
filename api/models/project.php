@@ -113,7 +113,7 @@
             return $projects;
         }
 
-        // GET A SINGLE PROJECT: (confirma funcionar)
+        // GET A SINGLE PROJECT: 
         public function getProject( $id ) {
 
             $query = $this->db->prepare("
@@ -258,7 +258,7 @@
 
         }
 
-        // DELETE A PROJECT: (confirma funcionar)
+        // DELETE A PROJECT: 
         public function deleteProject( $id ) {
 
             $query = $this->db->prepare("
@@ -268,9 +268,7 @@
 
             $deletedProject = $query->execute([ $id ]);
 
-            if(!empty($data["images"])) {
-                
-                if( $deletedProject ) {
+            if( $deletedProject ) {
 
                     $query = $this->db->prepare("
                         DELETE FROM images
@@ -278,10 +276,11 @@
                     ");
 
                     $query->execute([ $id ]);
-                }
+                
             }
 
             return $deletedProject;
+
 
         }
 
@@ -302,27 +301,3 @@
             return $query->fetch();
         }
     } 
-    
-
-    /*
-    <!-- (A) UPLOAD FORM -->
-    <form method="post" enctype="multipart/form-data">
-    <input type="file" name="upload" accept=".png,.gif,.jpg,.webp" required>
-    <input type="submit" name="submit" value="Upload Image">
-    </form>
-
-    <?php
-    // (B) SAVE IMAGE INTO DATABASE
-    if (isset($_FILES["images"])) {
-    try {
-        // (B1) CONNECT To DATABASE
-        require "2-connect-db.php";
-
-        // (B2) READ IMAGE FILE & INSERT
-        $stmt = $pdo->prepare("INSERT INTO `images` (`img_name`, `img_data`) VALUES (?,?)");
-        $stmt->execute([$_FILES["images"]["name"], file_get_contents($_FILES["images"]["tmp_name"])]);
-        echo "OK";
-    } catch (Exception $ex) { echo $ex->getMessage(); }
-    }
-    ?>
-    */
