@@ -5,10 +5,62 @@
     $model = new Project();
 
 
-    // Validate and sanitize:
-    function validatorPost($data) {
+    // Sanitize:
+    function sanitize($data) {
+        if( !empty($data) ) {
+            $data["title"] = trim(htmlspecialchars(strip_tags($data["title"]))); 
+            $data["location"] = trim(htmlspecialchars(strip_tags($data["location"]))); 
+            $data["description"] = trim(htmlspecialchars(strip_tags($data["description"])));
+
+            for( $i = 0; $i < count($data["images"]); $i++ ) {
+
+                $sanitize = trim(htmlspecialchars(strip_tags($data["images"][$i])));
+                $data["images"][$i] = str_replace("data:image/jpeg;base64,", "", $sanitize);
+            } 
+
+            return $data;
+        }
+
+        return false;
+    }
+
+    // Validate:
+    function validator($sanitizedData) {
+
+        if( !empty($sanitizedData) ) {
+
+            for( $i = 0; $i < count($sanitizedData["images"]); $i++ ) {
+
+                $size = strlen($sanitizedData["images"][$i]);
+
+                if( 
+                    isset($sanitizedData["title"]) &&
+                    isset($sanitizedData["location"]) &&
+                    isset($sanitizedData["description"]) &&
+                    mb_strlen($sanitizedData["title"]) >= 3 &&
+                    mb_strlen($sanitizedData["title"]) <= 250 &&
+                    mb_strlen($sanitizedData["location"]) >= 3 &&
+                    mb_strlen($sanitizedData["location"]) <= 120 &&
+                    mb_strlen($sanitizedData["description"]) >= 3 &&
+                    mb_strlen($sanitizedData["description"]) <= 10000 &&
+                    $size > 0 &&
+                    $size < 10000000
+                ) {
+                
+                    return true;
+                } 
+                
+            }
+            
+        }   
+
+        return false;
+
+    }
+
+    function imageTransformation($sanitizedData) {
         
-        $target_dir = "../images/";
+        $target_dir = "/images/";
         
         // allowed image formats array
         $allowed_files_formats = [
@@ -16,70 +68,34 @@
             "png" => "image/png",
             "gif" => "image/gif",
             "webp" => "image/webp",
-            "svg+xml" => "image/svg"
+            "svg" => "image/svg+xml"
         ];
-        
-        //sanitize texts
-        if( $data ) {
-            $data["title"] = trim(htmlspecialchars(strip_tags($data["title"]))); 
-            $data["location"] = trim(htmlspecialchars(strip_tags($data["location"]))); 
-            $data["description"] = trim(htmlspecialchars(strip_tags($data["description"]))); 
-        }
 
-        // Validate text
-        if( 
-            !empty($data) &&
-            isset($data["title"]) &&
-            isset($data["location"]) &&
-            isset($data["description"]) &&
-            mb_strlen($data["title"]) >= 3 &&
-            mb_strlen($data["title"]) <= 250 &&
-            mb_strlen($data["location"]) >= 3 &&
-            mb_strlen($data["location"]) <= 120 &&
-            mb_strlen($data["description"]) >= 3 &&
-            mb_strlen($data["description"]) <= 10000
-        ) {
-            //sanitize and decode each image in array
-            for( $i = 0; $i < count($data["images"]); $i++ ) {
+        for( $i = 0; $i < count($sanitizedData["images"]); $i++ ) {
 
-                $sanitize = trim(htmlspecialchars(strip_tags($data["images"][$i])));
-                $replace = str_replace("data:image/jpeg;base64,", "", $sanitize);
-                $size = strlen($replace);
+            $decoded_image = base64_decode($sanitizedData["images"][$i]);
 
-                if( $size > 0 &&
-                    $size < 10000000
-                ) {
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
 
-                    $decoded_image = base64_decode($replace);
-                    $data["images"][$i] = $decoded_image;
+            $detected_format = $finfo->buffer($decoded_image);
 
-                    $finfo = new finfo(FILEINFO_MIME_TYPE);
+            if(in_array($detected_format, $allowed_files_formats)) {
 
-                    $detected_format = $finfo->buffer($data["images"][$i]);
-
-                    if(in_array($detected_format, $allowed_files_formats)) {
-        
-                        $filename = $data["title"] . "_" . bin2hex(random_bytes(4));
-                        
-                        $extension = "." . array_search($detected_format, $allowed_files_formats);
-        
-                        $file_dir = $target_dir . $filename . $extension;
-        
-                        file_put_contents($file_dir, $data["images"][$i]);
-                        
-                    }
-                }
-                $data["images"][$i] = $file_dir;
-
-                var_dump($data); //<---- nomes actualizados em cada imagem
+                $filename = $sanitizedData["title"] . "_" . bin2hex(random_bytes(4));
                 
-                return $data;
-            }
-            
-        }
-        return false;
+                $extension = "." . array_search($detected_format, $allowed_files_formats);
 
-    };
+                $file_dir = $target_dir . $filename . $extension;
+
+                file_put_contents(".." . $file_dir, $decoded_image);
+                
+            }
+            $sanitizedData["images"][$i] = $file_dir;
+        }
+        
+        return $sanitizedData;
+    }
+   
 
     
 
@@ -119,15 +135,16 @@
     } elseif($_SERVER["REQUEST_METHOD"] === "POST") { 
 
         $data = json_decode( file_get_contents("php://input"), TRUE );
+
+        $sanitizedData = sanitize($data);
+        $transformedData = imageTransformation($sanitizedData);
         
-        if( validatorPost($data) ) {
-            var_dump($data);// <------ nomes base64 em cada imagem
-
-
-            $model->createProject( $data, $data["images"] );
+        if( validator($sanitizedData) ) {
+            
+            $model->createProject( $transformedData );
     
             http_response_code(202);
-            die('{"message": "Uploaded project ' . $data["title"] . ' with success"}');
+            die('{"message": "Uploaded project ' . $transformedData["title"] . ' with success"}');
 
         } else {
 
@@ -138,23 +155,26 @@
 
 
         
-    } else if($_SERVER["REQUEST_METHOD"] === "PUT") { // falta validação das imagens
+    } else if($_SERVER["REQUEST_METHOD"] === "PUT") { 
 
         $data = json_decode( file_get_contents("php://input"), TRUE );
+        
+        $sanitizedData = sanitize($data);
+        $transformedData = imageTransformation($sanitizedData);
 
         if( 
             !empty($id) &&
-            validatorPost($data)
+            validator($sanitizedData)
         ) {
 
-            $updateProject = $model->updateProject( $id, $data );
+            $updateProject = $model->updateProject( $id, $transformedData );
 
             if( $updateProject ) {
                 http_response_code(202);
 
                 echo json_encode( $updateProject );
 
-                die('{"message": "Updated project ' . $id . ', ' . $data["title"] . ' with success"}');
+                die('{"message": "Updated project ' . $id . ', ' . $transformedData["title"] . ' with success"}');
 
             } else {
                 http_response_code(404);
