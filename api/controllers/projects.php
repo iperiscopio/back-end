@@ -81,7 +81,7 @@
 
             if(in_array($detected_format, $allowed_files_formats)) {
 
-                $filename = $sanitizedData["title"] . "_" . bin2hex(random_bytes(4));
+                $filename = str_replace(" ", "_", $sanitizedData["title"]) . "_" . bin2hex(random_bytes(4));
                 
                 $extension = "." . array_search($detected_format, $allowed_files_formats);
 
@@ -166,8 +166,8 @@
             !empty($id) &&
             validator($sanitizedData)
         ) {
-
             $updateProject = $model->updateProject( $id, $transformedData );
+            var_dump($updateProject);
 
             if( $updateProject ) {
                 http_response_code(202);
