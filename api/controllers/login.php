@@ -46,9 +46,10 @@
             // criar jwt
             $payload = [
                 "userId" => $user["user_id"],
-                "username" => $user["username"],
+                "email" => $user["email"],
                 "firstName" => $user["first_name"],
-                "iat" => time()
+                "iat" => time(),
+                "exp" => time() + (60 * 120)
             ];
 
             $secret = CONFIG["SECRET_KEY"];
@@ -57,13 +58,13 @@
 
             
             header("X-Auth-Token: " . $token);
-            // echo '{"X-Auth-Token":"' . $token . '"}';
-
+            
             http_response_code(202);
 
-            // echo json_encode( $user );
-
-            die('{"message":"You are now logged in"}');
+            echo json_encode([ 
+                "message" => "You are now logged in",
+                "token" => $token
+            ]);
 
 
         } else {

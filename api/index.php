@@ -18,19 +18,16 @@
     $url_parts = explode("/", $_SERVER["REQUEST_URI"]);
 
     $controllers = [
-        "accountsManager",
+        "accounts-manager",
         "login",
         "images",
         "projects",
-        "projectManager",
+        "projects-manager",
         "siteImages"
     ];
 
     $controller = $url_parts[2];
 
-    // if(!empty($url_parts[3]) && is_numeric($url_parts[3])) {
-    //     $id = intval($url_parts[3]);
-    // }
     $id = !empty($url_parts[3]) ? $url_parts[3] : "";
 
     if( !in_array($controller, $controllers) ) {

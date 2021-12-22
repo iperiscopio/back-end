@@ -4,28 +4,29 @@
 
     require("models/config.php");
     require("models/project.php");
+    require("models/captcha.php");
 
     $config = new Config();
 
     $model = new Project();
 
     // User authentication through JWT
-    if( in_array($_SERVER["REQUEST_METHOD"], ["GET","POST", "PUT", "DELETE"]) ) {
+    if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
         
         $userId = $config->routeRequireValidation();
-        var_dump($userId);
 
         if( empty( $userId ) ) {
+            var_dump( $userId);
             http_response_code(401);
-            return '{"message":"Wrong or missing Auth Token"}';
+            die('{"message":"Wrong or missing Auth Token"}');
         } 
 
-        if( 
-            !empty($id)
-        ) {
-            http_response_code(403);
-            die('{"message":"You do not have permission to perform this action"}');
-        }
+        // if( 
+        //     !empty($id)
+        // ) {
+        //     http_response_code(403);
+        //     die('{"message":"You do not have permission to perform this action"}');
+        // }
 
     }
      
@@ -129,7 +130,7 @@
         echo json_encode( $model->getAllProjects() );
 
 
-    }  elseif($_SERVER["REQUEST_METHOD"] === "POST") { 
+    } elseif($_SERVER["REQUEST_METHOD"] === "POST") { 
 
         $data = json_decode( file_get_contents("php://input"), TRUE );
 
@@ -193,6 +194,7 @@
         
         if( !empty( $id ) && is_numeric( $id ) ) {
 
+            
             $removeProject = $model->deleteProject($id);
             
             if( $removeProject ) { 

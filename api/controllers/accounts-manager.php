@@ -10,7 +10,7 @@
     $model = new User();
 
     // User authentication through JWT
-    if( in_array($_SERVER["REQUEST_METHOD"], ["GET","POST", "PUT", "DELETE"]) ) {
+    if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
         
         $userId = $config->routeRequireValidation();
         var_dump($userId);
@@ -64,8 +64,7 @@
 
     if( $_SERVER["REQUEST_METHOD"] === "GET") {
 
-        
-
+    
         http_response_code(202);
         echo json_encode($model->userInfo());
 

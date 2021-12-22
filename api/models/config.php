@@ -10,21 +10,21 @@
             $this->db = new PDO("mysql:host=localhost;dbname=ilheu_atelier;charset=utf8mb4", "root", "");
         }
 
-        // validação user/admin
+        // user/admin validation 
         public function routeRequireValidation() {
             
             $headers = apache_request_headers();
+
             foreach($headers as $header => $value) {
-                if( strtolower($header) === "X-Auth-Token" ) {
+                if( strtolower($header) === "x-auth-token" ) {
                     $token = trim( $value );
                 }
             }
-
-            // Validação Token
+            // Token validation
             $secret = CONFIG["SECRET_KEY"];
-
+            
             $isValid = Token::validate($token, $secret);
-
+            
             if($isValid) {
                 $user = Token::getPayload($token, $secret);
             }

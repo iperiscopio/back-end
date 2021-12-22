@@ -29,7 +29,7 @@
                 return $user;
             }
 
-            return ;
+            return 0;
         }
 
 
@@ -82,7 +82,7 @@
         }
 
         //GET LOGEDIN USER INFO:
-        public function userInfo( ) {
+        public function userInfo( $id ) {
             $query = $this->db->prepare("
                 SELECT 
                     user_id,
@@ -92,9 +92,10 @@
                     password,
                     username
                 FROM users
+                WHERE user_id = ?
             ");
 
-            $query->execute([]);
+            $query->execute([ $id ]);
 
             return $query->fetch( PDO::FETCH_ASSOC );
         }
@@ -113,7 +114,7 @@
                     user_id = ?
             ");
 
-            $query->execute([ 
+            return $query->execute([ 
                 $user["first_name"],
                 $user["last_name"],
                 $user["email"],
