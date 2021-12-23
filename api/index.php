@@ -19,6 +19,7 @@
 
     $controllers = [
         "accounts-manager",
+        "captcha",
         "login",
         "images",
         "projects",
