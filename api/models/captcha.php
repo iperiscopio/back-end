@@ -23,7 +23,7 @@
 
                 $black = imagecolorallocate($image, 0, 0, 0);
 
-                $text = bin2hex(random_bytes(5));
+                $text = bin2hex(random_bytes(3));
 
                 $newCaptcha = $text;
 
