@@ -1,9 +1,35 @@
 <?php
 
-    require("config.php");
+    require_once("config.php");
 
     class ClientsMessages extends Config {
 
+        public function showMessages() {
+            
+            $query = $this->db->prepare("
+                SELECT
+                    clients.client_id,
+                    clients.name,
+                    clients.title,
+                    clients.email,
+                    clients.telephone,
+                    messages.message_id,
+                    messages.message,
+                    messages.message_date
+                FROM 
+                    clients
+                INNER JOIN 
+                    messages USING(client_id)
+                ORDER BY 
+                    messages.message_date
+            ");
+            
+            $query->execute();
+
+            return $query->fetchAll( PDO::FETCH_ASSOC );
+        }
+        
+        
         public function createMessage( $client ) {
             // Insert Client Info
             $querie = $this->db->prepare("
@@ -23,7 +49,7 @@
 
             if( $newClient ) {
                 // Insert Client Message
-                $querie = $this->db->prepare("
+                $query = $this->db->prepare("
                     INSERT INTO messages
                     (client_id, message)
                     VALUES(?, ?)
@@ -36,28 +62,16 @@
             }
         }
 
-        public function showMessages() {
-            $querie = $this->db->prepare("
-                SELECT
-                    clients.client_id,
-                    clients.name,
-                    clients.title,
-                    clients.email,
-                    clients.telefone,
-                    messages.message,
-                    messages.message_date
-                FROM clients
-                INNER JOIN messages USING(client_id)
-                ORDER BY messages.message_date
-            ");
-            
-            $query->execute([
-                $client["name"],
-                $client["title"],
-                $client["email"],
-                $client["telephone"],
-            ]);
 
-            return $query->fetchAll( PDO::FETCH_ASSOC );
+        public function deleteMessage( $id ){
+
+            $query = $this->db->prepare("
+                DELETE FROM messages
+                WHERE messages_id = ?
+            ");
+
+            return $query->execute([ $id ]);
         }
+
+        
     }

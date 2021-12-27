@@ -2,31 +2,20 @@
 
     use ReallySimpleJWT\Token;
 
-    require("models/config.php");
     require("models/project.php");
-    require("models/captcha.php");
-
-    $config = new Config();
 
     $model = new Project();
 
     // User authentication through JWT
     if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
         
-        $userId = $config->routeRequireValidation();
+        $userId = $model->routeRequireValidation();
 
         if( empty( $userId ) ) {
             var_dump( $userId);
             http_response_code(401);
             die('{"message":"Wrong or missing Auth Token"}');
         } 
-
-        // if( 
-        //     !empty($id)
-        // ) {
-        //     http_response_code(403);
-        //     die('{"message":"You do not have permission to perform this action"}');
-        // }
 
     }
      

@@ -1,6 +1,6 @@
 <?php
 
-    require("config.php");
+    require_once("config.php");
 
     class Captcha extends Config {
 
@@ -15,19 +15,19 @@
             if($deletedIp) {
                 header("Content-Type: image/png");
 
-                $image = imagecreate(163, 60);
+                $image = imagecreate(117, 60);
 
-                imagecolorallocate($image, 190, 190, 190);
+                imagecolorallocate($image, 255, 160, 122);
 
                 $font = __DIR__ . "/../../atwriter.ttf";
 
-                $black = imagecolorallocate($image, 0, 0, 0);
+                $black = imagecolorallocate($image, 160, 160, 160);
 
                 $text = bin2hex(random_bytes(3));
 
                 $newCaptcha = $text;
 
-                imagettftext($image, 20, 0, 12, 38, $black, $font, $text);
+                imagettftext($image, 20, 5, 17, 41, $black, $font, $text);
 
             
                 $query = $this->db->prepare("
