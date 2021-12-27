@@ -2,35 +2,24 @@
 
     use ReallySimpleJWT\Token;
 
-    require("models/config.php");
     require("models/user.php");
-
-    $config = new Config();
 
     $model = new User();
 
     // User authentication through JWT
     if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
         
-        $userId = $config->routeRequireValidation();
-        var_dump($userId);
+        $userId = $model->routeRequireValidation();
 
         if( empty( $userId ) ) {
             http_response_code(401);
             return '{"message":"Wrong or missing Auth Token"}';
         } 
-
-        if( 
-            !empty($id)
-        ) {
-            http_response_code(403);
-            die('{"message":"You do not have permission to perform this action"}');
-        }
     
     }
 
     // validation:
-    function validation( $data ) {
+    function postValidation( $data ) {
         
         // sanitization:
         foreach($data as $key => $value) {
@@ -39,15 +28,37 @@
 
         if( 
             !empty($data) &&
-            !empty($data["first_name"]) &&
-            !empty($data["last_name"]) &&
+            !empty($data["name"]) &&
             !empty($data["email"]) &&
             !empty($data["password"]) &&
             !empty($data["username"]) &&
-            mb_strlen($data["first_name"]) >= 3 &&
-            mb_strlen($data["first_name"]) <= 120 &&
-            mb_strlen($data["last_name"]) >= 3 &&
-            mb_strlen($data["last_name"]) <= 120 &&
+            mb_strlen($data["name"]) >= 3 &&
+            mb_strlen($data["name"]) <= 180 &&
+            filter_var($data["email"], FILTER_VALIDATE_EMAIL) &&
+            mb_strlen($data["password"]) >= 8 &&
+            mb_strlen($data["password"]) <= 1000 &&
+            mb_strlen($data["username"]) >= 3 &&
+            mb_strlen($data["username"]) <= 60 
+        ) {
+
+            return true;
+        } 
+
+        return false;
+    }
+
+    function putValidation( $data ) {
+        
+        // sanitization:
+        foreach($data as $key => $value) {
+            $data[$key] = trim(htmlspecialchars(strip_tags($value)));
+        }
+
+        if( 
+            !empty($data) &&
+            !empty($data["password"]) &&
+            mb_strlen($data["name"]) >= 3 &&
+            mb_strlen($data["name"]) <= 180 &&
             filter_var($data["email"], FILTER_VALIDATE_EMAIL) &&
             mb_strlen($data["password"]) >= 8 &&
             mb_strlen($data["password"]) <= 1000 &&
@@ -64,16 +75,17 @@
 
     if( $_SERVER["REQUEST_METHOD"] === "GET") {
 
-    
+        $id = $model->routeRequireValidation();
+
         http_response_code(202);
-        echo json_encode($model->userInfo());
+        echo json_encode($model->userInfo( $id ));
 
 
     } elseif( $_SERVER["REQUEST_METHOD"] === "POST") {
 
         $data = json_decode( file_get_contents("php://input"), true );
 
-        if( validation( $data ) ) {
+        if( postValidation( $data ) ) {
 
             $validEmail = $model->emailValidation( $data );
 
@@ -110,11 +122,9 @@
 
         $data = json_decode( file_get_contents("php://input"), true );
 
-        if( !empty($id) &&
-            validation( $data ) 
-        ) {
+        if( !empty($id) && putValidation( $data ) ) {
 
-            $changedUser = $model->updateUser( $data );
+            $changedUser = $model->updateUser( $id, $data );
 
             if(empty( $changedUser )) {
                 http_response_code(404);

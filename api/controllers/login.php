@@ -47,7 +47,7 @@
             $payload = [
                 "userId" => $user["user_id"],
                 "email" => $user["email"],
-                "firstName" => $user["first_name"],
+                "name" => $user["name"],
                 "iat" => time(),
                 "exp" => time() + (60 * 120)
             ];

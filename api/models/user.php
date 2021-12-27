@@ -9,8 +9,7 @@
             $query = $this->db->prepare("
                 SELECT 
                     user_id,
-                    first_name,
-                    last_name,
+                    name,
                     email,
                     password,
                     username
@@ -38,13 +37,12 @@
 
             $query = $this->db->prepare("
                 INSERT INTO users
-                (first_name, last_name, email, password, username)
-                VALUES(?, ?, ?, ?, ?)
+                (name, email, password, username)
+                VALUES(?, ?, ?, ?)
             ");
 
             $newUser = $query->execute([
-                $user["first_name"],
-                $user["last_name"],
+                $user["name"],
                 $user["email"],
                 password_hash($user["password"], PASSWORD_DEFAULT),
                 $user["username"]
@@ -86,8 +84,7 @@
             $query = $this->db->prepare("
                 SELECT 
                     user_id,
-                    first_name,
-                    last_name,
+                    name,
                     email,
                     password,
                     username
@@ -97,7 +94,9 @@
 
             $query->execute([ $id ]);
 
-            return $query->fetch( PDO::FETCH_ASSOC );
+            $userInfo = $query->fetch( PDO::FETCH_ASSOC );
+            
+            return [$userInfo];
         }
 
         // UPDATE LOGEDIN USER:
@@ -105,8 +104,7 @@
             $query = $this->db->prepare("
                 UPDATE users
                 SET
-                    first_name = ?,
-                    last_name = ?,
+                    name = ?,
                     email = ?,
                     password = ?,
                     username = ?
@@ -115,8 +113,7 @@
             ");
 
             return $query->execute([ 
-                $user["first_name"],
-                $user["last_name"],
+                $user["name"],
                 $user["email"],
                 password_hash($user["password"], PASSWORD_DEFAULT),
                 $user["username"],
