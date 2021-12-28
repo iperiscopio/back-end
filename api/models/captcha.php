@@ -6,7 +6,7 @@
 
         public function newCaptcha( $user_ip ) {
             $query = $this->db->prepare("
-                DELETE FROM captcha
+                DELETE FROM captchas
                 WHERE ip = ?
             ");
 
@@ -31,7 +31,7 @@
 
             
                 $query = $this->db->prepare("
-                    INSERT INTO captcha
+                    INSERT INTO captchas
                     (ip, captcha)
                     VALUES(?, ?)
                 ");
@@ -52,22 +52,27 @@
         }
 
         public function matched( $user_ip, $user_captcha ) {
+    
+            var_dump("ip " . $user_ip);
+            var_dump("captcha " . $user_captcha);
+
             $query = $this->db->prepare("
                 SELECT
-                    ip
-                    captcha
-                FROM captcha
+                    *
+                FROM captchas
                 WHERE 
                     ip = ?
-                    captcha = ?
-            ");
+                    AND captcha = ?
+            "); 
 
             $query->execute([
                 $user_ip,
-                $user_captcha
+                $user_captcha,
             ]);
-
+            
             $matched = $query->fetch( PDO::FETCH_ASSOC );
+            var_dump($matched);
+            
 
             if( $matched ) {
                 return true;

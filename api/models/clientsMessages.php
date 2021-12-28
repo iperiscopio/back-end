@@ -32,7 +32,7 @@
         
         public function createMessage( $client ) {
             // Insert Client Info
-            $querie = $this->db->prepare("
+            $query = $this->db->prepare("
                 INSERT INTO clients
                 (name, title, email, telephone)
                 VALUES(?, ?, ?, ?)

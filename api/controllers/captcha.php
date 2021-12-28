@@ -14,7 +14,6 @@
         if(
             !empty($data) &&
             isset($data["name"]) &&
-            isset($data["location"]) &&
             isset($data["title"]) &&
             isset($data["email"]) &&
             isset($data["telephone"]) &&
@@ -27,7 +26,7 @@
             filter_var($data["email"], FILTER_VALIDATE_EMAIL) &&
             mb_strlen($data["telephone"]) >= 3 &&
             mb_strlen($data["telephone"]) <= 25 &&
-            mb_strlen($data["message"]) <= 10 &&
+            mb_strlen($data["message"]) >= 3 &&
             mb_strlen($data["message"]) <= 65535 &&
             mb_strlen($data["captcha"]) == 6
         ) {
@@ -54,8 +53,8 @@
 
         $data = json_decode( file_get_contents("php://input"), true );
         
-
-        if( validate($data) ) {
+        
+        if( validate( $data ) ) {
 
             $validCaptcha = $model->matched( $userIp, $data["captcha"] );
 

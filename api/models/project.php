@@ -284,7 +284,7 @@
 
         }
 
-        // Confirmar autorização do user para Update e Deletes
+        // Confirmar autorização do user para Update e Delete - not in use
         public function getProjectByUser($id, $userId) {
             $query = $this->db->prepare("
                 SELECT project_id

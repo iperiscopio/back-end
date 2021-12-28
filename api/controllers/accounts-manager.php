@@ -2,16 +2,16 @@
 
     use ReallySimpleJWT\Token;
 
-    require("models/user.php");
+    require("models/admin.php");
 
-    $model = new User();
+    $model = new Admin();
 
-    // User authentication through JWT
+    // Admin authentication through JWT
     if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
         
-        $userId = $model->routeRequireValidation();
+        $adminId = $model->routeRequireValidation();
 
-        if( empty( $userId ) ) {
+        if( empty( $adminId ) ) {
             http_response_code(401);
             return '{"message":"Wrong or missing Auth Token"}';
         } 
@@ -78,7 +78,7 @@
         $id = $model->routeRequireValidation();
 
         http_response_code(202);
-        echo json_encode($model->userInfo( $id ));
+        echo json_encode($model->adminInfo( $id ));
 
 
     } elseif( $_SERVER["REQUEST_METHOD"] === "POST") {
@@ -90,15 +90,15 @@
             $validEmail = $model->emailValidation( $data );
 
             if( $validEmail ) {
-                $newUser = $model->register( $data );
+                $newAdmin = $model->register( $data );
 
-                if(empty( $newUser )) {
+                if(empty( $newAdmin )) {
                     http_response_code(400);
                     die('{"message":"Information not filled correctly"}');
                 }
                 
                 http_response_code(202);
-                die('{"message":"You are now a registered user"}');
+                die('{"message":"You are now a registered Admin"}');
 
 
             } else {
@@ -124,15 +124,15 @@
 
         if( !empty($id) && putValidation( $data ) ) {
 
-            $changedUser = $model->updateUser( $id, $data );
+            $changedAdmin = $model->updateAdmin( $id, $data );
 
-            if(empty( $changedUser )) {
+            if(empty( $changedAdmin )) {
                 http_response_code(404);
                 die('{"message":"Not Found"}');
             }
             
             http_response_code(202);
-            die('{"message":"User information updated with success"}');
+            die('{"message":"Admin information updated with success"}');
 
     
             
@@ -152,12 +152,12 @@
         
         if( !empty( $id ) && is_numeric( $id ) ) {
 
-            $removeUser = $model->deleteUser($id);
+            $removeAdmin = $model->deleteAdmin($id);
             
-            if( $removeUser ) { 
+            if( $removeAdmin ) { 
 
                 http_response_code(202);
-                die('{"message": "Deleted user with success"}');
+                die('{"message": "Deleted Admin with success"}');
                 
             } else {
 

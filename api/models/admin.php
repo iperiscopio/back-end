@@ -2,30 +2,30 @@
 
     require_once("config.php");
 
-    class User extends Config {
+    class Admin extends Config {
 
         // LOGIN:
         public function login($data) {
             $query = $this->db->prepare("
                 SELECT 
-                    user_id,
+                    admin_id,
                     name,
                     email,
                     password,
                     username
-                FROM users
+                FROM admins
                 WHERE email = ?
             ");
 
             $query->execute([ $data["email"] ]);
 
-            $user = $query->fetch( PDO::FETCH_ASSOC );
+            $admin = $query->fetch( PDO::FETCH_ASSOC );
 
             if( 
-                !empty($user) &&
-                password_verify($data["password"], $user["password"])
+                !empty($admin) &&
+                password_verify($data["password"], $admin["password"])
             ) {
-                return $user;
+                return $admin;
             }
 
             return 0;
@@ -33,15 +33,15 @@
 
 
         // REGISTER:
-        public function register( $user ) {
+        public function register( $admin ) {
 
             $query = $this->db->prepare("
-                INSERT INTO users
+                INSERT INTO admins
                 (name, email, password, username)
                 VALUES(?, ?, ?, ?)
             ");
 
-            $newUser = $query->execute([
+            $newAdmin = $query->execute([
                 $user["name"],
                 $user["email"],
                 password_hash($user["password"], PASSWORD_DEFAULT),
@@ -49,7 +49,7 @@
             ]);
 
 
-            return $newUser ? $this->db->lastInsertId() : 0;
+            return $newAdmin ? $this->db->lastInsertId() : 0;
 
             
    
@@ -60,7 +60,7 @@
 
             $query = $this->db->prepare("
                 SELECT email
-                FROM users
+                FROM admins
                 WHERE email = ?
             ");
 
@@ -80,36 +80,36 @@
         }
 
         //GET LOGEDIN USER INFO:
-        public function userInfo( $id ) {
+        public function adminInfo( $id ) {
             $query = $this->db->prepare("
                 SELECT 
-                    user_id,
+                    admin_id,
                     name,
                     email,
                     password,
                     username
-                FROM users
-                WHERE user_id = ?
+                FROM admins
+                WHERE admin_id = ?
             ");
 
             $query->execute([ $id ]);
 
-            $userInfo = $query->fetch( PDO::FETCH_ASSOC );
+            $adminInfo = $query->fetch( PDO::FETCH_ASSOC );
             
-            return [$userInfo];
+            return [$adminInfo];
         }
 
         // UPDATE LOGEDIN USER:
-        public function updateUser( $id, $user ) {
+        public function updateAdmin( $id, $admin ) {
             $query = $this->db->prepare("
-                UPDATE users
+                UPDATE admins
                 SET
                     name = ?,
                     email = ?,
                     password = ?,
                     username = ?
                 WHERE
-                    user_id = ?
+                    admin_id = ?
             ");
 
             return $query->execute([ 
@@ -122,10 +122,10 @@
         }
 
         // DELETE LOGEDIN USER:
-        public function deleteUser( $id ) {
+        public function deleteAdmin( $id ) {
             $query = $this->db->prepare("
-                DELETE FROM users
-                WHERE user_id = ?
+                DELETE FROM admins
+                WHERE admin_id = ?
             ");
 
             $query->execute([ $id ]);

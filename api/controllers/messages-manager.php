@@ -6,10 +6,10 @@
 
     if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
         
-        $userId = $model->routeRequireValidation();
+        $adminId = $model->routeRequireValidation();
 
-        if( empty( $userId ) ) {
-            var_dump( $userId);
+        if( empty( $adminId ) ) {
+            var_dump( $adminId);
             http_response_code(401);
             die('{"message":"Wrong or missing Auth Token"}');
         } 

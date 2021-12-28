@@ -2,9 +2,9 @@
 
     use ReallySimpleJWT\Token;
 
-    require("models/user.php");
+    require("models/admin.php");
 
-    $model = new User();
+    $model = new Admin();
 
     // Validation:
     function validateLogin( $data ) {
@@ -35,9 +35,9 @@
 
         if( validateLogin( $data ) ) {
             
-            $user = $model->login($data);
+            $admin = $model->login($data);
 
-            if(empty( $user )) {
+            if(empty( $admin )) {
                 http_response_code(422);
                 die('{"message":"Invalid email or password"}');
             }
@@ -45,9 +45,9 @@
 
             // criar jwt
             $payload = [
-                "userId" => $user["user_id"],
-                "email" => $user["email"],
-                "name" => $user["name"],
+                "adminId" => $admin["admin_id"],
+                "email" => $admin["email"],
+                "name" => $admin["name"],
                 "iat" => time(),
                 "exp" => time() + (60 * 120)
             ];

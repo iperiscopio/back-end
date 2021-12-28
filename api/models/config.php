@@ -10,7 +10,7 @@
             $this->db = new PDO("mysql:host=localhost;dbname=ilheu_atelier;charset=utf8mb4", "root", "");
         }
 
-        // user/admin validation 
+        // admin validation 
         public function routeRequireValidation() {
             
             $headers = apache_request_headers();
@@ -26,11 +26,11 @@
             $isValid = Token::validate($token, $secret);
             
             if($isValid) {
-                $user = Token::getPayload($token, $secret);
+                $admin = Token::getPayload($token, $secret);
             }
             
-            if( isset($user) ) { 
-                return $user["userId"];
+            if( isset($admin) ) { 
+                return $admin["userId"];
             }
 
             return 0;
