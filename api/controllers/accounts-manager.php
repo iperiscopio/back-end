@@ -7,7 +7,7 @@
     $model = new Admin();
 
     // Admin authentication through JWT
-    if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
+    if( in_array($_SERVER["REQUEST_METHOD"], ["GET", "POST", "PUT", "DELETE"]) ) {
         
         $adminId = $model->routeRequireValidation();
 
@@ -76,7 +76,7 @@
     if( $_SERVER["REQUEST_METHOD"] === "GET") {
 
         $id = $model->routeRequireValidation();
-
+        
         http_response_code(202);
         echo json_encode($model->adminInfo( $id ));
 

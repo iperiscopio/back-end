@@ -21,12 +21,13 @@
                 INNER JOIN 
                     messages USING(client_id)
                 ORDER BY 
-                    messages.message_date
+                    messages.message_date DESC
             ");
             
             $query->execute();
 
-            return $query->fetchAll( PDO::FETCH_ASSOC );
+            $result = $query->fetchAll( PDO::FETCH_ASSOC );
+            return $result;
         }
         
         
@@ -67,10 +68,11 @@
 
             $query = $this->db->prepare("
                 DELETE FROM messages
-                WHERE messages_id = ?
+                WHERE message_id = ?
             ");
 
-            return $query->execute([ $id ]);
+            $id = $query->execute([ $id ]);
+            return $id;
         }
 
         

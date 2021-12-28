@@ -30,7 +30,7 @@
             }
             
             if( isset($admin) ) { 
-                return $admin["userId"];
+                return $admin["adminId"];
             }
 
             return 0;

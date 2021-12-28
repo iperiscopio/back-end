@@ -42,10 +42,10 @@
             ");
 
             $newAdmin = $query->execute([
-                $user["name"],
-                $user["email"],
-                password_hash($user["password"], PASSWORD_DEFAULT),
-                $user["username"]
+                $admin["name"],
+                $admin["email"],
+                password_hash($admin["password"], PASSWORD_DEFAULT),
+                $admin["username"]
             ]);
 
 
@@ -79,7 +79,7 @@
 
         }
 
-        //GET LOGEDIN USER INFO:
+        //GET LOGEDIN ADMIN INFO:
         public function adminInfo( $id ) {
             $query = $this->db->prepare("
                 SELECT 
@@ -99,7 +99,7 @@
             return [$adminInfo];
         }
 
-        // UPDATE LOGEDIN USER:
+        // UPDATE LOGEDIN ADMIN:
         public function updateAdmin( $id, $admin ) {
             $query = $this->db->prepare("
                 UPDATE admins
@@ -113,30 +113,24 @@
             ");
 
             return $query->execute([ 
-                $user["name"],
-                $user["email"],
-                password_hash($user["password"], PASSWORD_DEFAULT),
-                $user["username"],
+                $admin["name"],
+                $admin["email"],
+                password_hash($admin["password"], PASSWORD_DEFAULT),
+                $admin["username"],
                 $id
              ]);
         }
 
-        // DELETE LOGEDIN USER:
+        // DELETE LOGEDIN ADMIN:
         public function deleteAdmin( $id ) {
             $query = $this->db->prepare("
                 DELETE FROM admins
                 WHERE admin_id = ?
             ");
 
-            $query->execute([ $id ]);
+            $id = $query->execute([ $id ]);
+            var_dump($id);
 
-            $id = $query->fetch();
-
-            if( $id ) {
-                return true;
-
-            } else {
-                return false;
-            }
+            return $id;
         }
     }

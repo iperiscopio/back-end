@@ -9,7 +9,7 @@
         $adminId = $model->routeRequireValidation();
 
         if( empty( $adminId ) ) {
-            var_dump( $adminId);
+
             http_response_code(401);
             die('{"message":"Wrong or missing Auth Token"}');
         } 
@@ -27,12 +27,11 @@
     } elseif($_SERVER["REQUEST_METHOD"] === "DELETE") {
 
         $data = json_decode( file_get_contents("php://input", TRUE ));
-        var_dump($data);
 
         if( !empty( $id ) && is_numeric( $id ) ) {
 
             $removeMessage = $model->deleteMessage( $id );
-            
+            var_dump($removeMessage);
             if( $removeMessage ) { 
 
                 http_response_code(202);
