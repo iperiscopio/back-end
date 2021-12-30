@@ -31,7 +31,7 @@
         if( !empty( $id ) && is_numeric( $id ) ) {
 
             $removeMessage = $model->deleteMessage( $id );
-            var_dump($removeMessage);
+            
             if( $removeMessage ) { 
 
                 http_response_code(202);

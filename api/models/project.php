@@ -4,25 +4,7 @@
 
     class Project extends Config {
 
-        //Projects Count:
-        public function count() {
-
-            $query = $this->db->prepare("
-                SELECT 
-                    COUNT(projects.project_id) AS totalProjects,
-                    COUNT(images.image_id) AS totalImages
-                FROM 
-                    projects
-                LEFT JOIN 
-                    images USING(project_id)                   
-            ");
-
-            $query->execute();
-
-            return $query->fetchAll( PDO::FETCH_ASSOC );
-        }
-
-
+        
         //GET ALL PROJECTS IN DB:
         public function getAllProjects() {
 
