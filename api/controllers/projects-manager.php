@@ -57,7 +57,7 @@
                     mb_strlen($sanitizedData["location"]) >= 3 &&
                     mb_strlen($sanitizedData["location"]) <= 120 &&
                     mb_strlen($sanitizedData["description"]) >= 3 &&
-                    mb_strlen($sanitizedData["description"]) <= 10000 &&
+                    mb_strlen($sanitizedData["description"]) <= 65535 &&
                     $size > 0 &&
                     $size < 10000000
                 ) {

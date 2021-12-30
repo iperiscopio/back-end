@@ -21,6 +21,7 @@
         "accounts-manager",
         "backoffice",
         "captcha",
+        "information",
         "login",
         "images",
         "messages-manager",

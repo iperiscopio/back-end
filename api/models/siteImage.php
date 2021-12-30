@@ -12,7 +12,7 @@
                     site_images                
             ");
 
-            $query->execute([]);
+            $query->execute();
 
             return $query->fetchAll( PDO::FETCH_ASSOC );
         }
