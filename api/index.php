@@ -23,7 +23,7 @@
         "captcha",
         "information",
         "login",
-        "images",
+        "images-manager",
         "messages-manager",
         "projects",
         "projects-manager",

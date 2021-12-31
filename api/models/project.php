@@ -42,6 +42,7 @@
                 }
                 if(!empty($value["image"])) {
                     $projects[$key]["images"][] = $value["image"];
+                   
                 }
                 $projectImages[] = $value["project_id"];
                 
@@ -200,36 +201,19 @@
                 $id
             ]);
 
-            
             if(!empty($data["images"])) {
-                // query to delete images table with id
-                if( $updatedProject ) {
 
+                foreach( $data["images"] as $image) {
                     $query = $this->db->prepare("
-                        DELETE FROM images
-                        WHERE project_id = ?
+                        INSERT INTO images
+                        (project_id, image)
+                        VALUES(?, ?)
                     ");
 
-                    $deletedImages = $query->execute([ $id ]);
-                    
-                    // query to insert updated images to table
-                    if( $deletedImages ) {
-                        
-                        foreach( $data["images"] as $image) {
-                            $query = $this->db->prepare("
-                                INSERT INTO images
-                                (project_id, image)
-                                VALUES(?, ?)
-                            ");
-
-                            $query->execute([
-                                $id,
-                                $image
-                            ]);
-                        }
-
-                    }
-                
+                    $query->execute([
+                        $id,
+                        $image
+                    ]);
                 }
             }
             
@@ -264,22 +248,5 @@
             return $deletedProject;
 
 
-        }
-
-        // Confirmar autorização do user para Update e Delete - not in use
-        public function getProjectByUser($id, $userId) {
-            $query = $this->db->prepare("
-                SELECT project_id
-                FROM projests
-                WHERE project_id = ?
-                    AND user_id = ?
-            ");
-
-            $query->execute([
-                $id,
-                $userId
-            ]);
-
-            return $query->fetch();
         }
     } 

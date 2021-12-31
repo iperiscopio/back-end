@@ -12,7 +12,6 @@
         $adminId = $model->routeRequireValidation();
 
         if( empty( $adminId ) ) {
-            var_dump( $adminId);
             http_response_code(401);
             die('{"message":"Wrong or missing Auth Token"}');
         } 
@@ -32,10 +31,9 @@
                 $sanitize = trim(htmlspecialchars(strip_tags($data["images"][$i])));
                 $data["images"][$i] = str_replace("data:image/jpeg;base64,", "", $sanitize);
             } 
-
+            
             return $data;
         }
-
         return false;
     }
 
@@ -44,10 +42,7 @@
 
         if( !empty($sanitizedData) ) {
 
-            for( $i = 0; $i < count($sanitizedData["images"]); $i++ ) {
-
-                $size = strlen($sanitizedData["images"][$i]);
-
+            if( empty($sanitizedData["images"]) ) {
                 if( 
                     isset($sanitizedData["title"]) &&
                     isset($sanitizedData["location"]) &&
@@ -57,18 +52,38 @@
                     mb_strlen($sanitizedData["location"]) >= 3 &&
                     mb_strlen($sanitizedData["location"]) <= 120 &&
                     mb_strlen($sanitizedData["description"]) >= 3 &&
-                    mb_strlen($sanitizedData["description"]) <= 65535 &&
-                    $size > 0 &&
-                    $size < 10000000
+                    mb_strlen($sanitizedData["description"]) <= 65535
                 ) {
-                
+                    
                     return true;
-                } 
-                
-            }
+                }
+            } else {
+
+                for( $i = 0; $i < count($sanitizedData["images"]); $i++ ) {
+
+                    $size = strlen($sanitizedData["images"][$i]);
+
+                    if( 
+                        isset($sanitizedData["title"]) &&
+                        isset($sanitizedData["location"]) &&
+                        isset($sanitizedData["description"]) &&
+                        mb_strlen($sanitizedData["title"]) >= 3 &&
+                        mb_strlen($sanitizedData["title"]) <= 250 &&
+                        mb_strlen($sanitizedData["location"]) >= 3 &&
+                        mb_strlen($sanitizedData["location"]) <= 120 &&
+                        mb_strlen($sanitizedData["description"]) >= 3 &&
+                        mb_strlen($sanitizedData["description"]) <= 65535 &&
+                        $size > 0 &&
+                        $size < 10000000
+                    ) {
+                        
+                        return true;
+                    } 
+                    
+                }
+            } 
             
         }   
-
         return false;
 
     }
@@ -183,7 +198,6 @@
         
         if( !empty( $id ) && is_numeric( $id ) ) {
 
-            
             $removeProject = $model->deleteProject($id);
             
             if( $removeProject ) { 
