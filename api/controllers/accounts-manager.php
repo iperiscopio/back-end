@@ -77,11 +77,14 @@
 
     if( $_SERVER["REQUEST_METHOD"] === "GET") {
 
-        $adminId = $model->routeRequireValidation();
-        
-        http_response_code(202);
-        echo json_encode($model->adminInfo( $adminId ));
+        if( $adminId = $model->routeRequireValidation() ) {
 
+            http_response_code(202);
+
+            echo json_encode($model->adminInfo( $adminId ));
+        }
+
+        
 
     } elseif( $_SERVER["REQUEST_METHOD"] === "POST") {
 
