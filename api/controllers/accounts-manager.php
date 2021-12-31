@@ -3,20 +3,22 @@
     use ReallySimpleJWT\Token;
 
     require("models/admin.php");
+    require("models/stats.php");
 
     $model = new Admin();
+    $stats = new Stats();
 
     // Admin authentication through JWT
-    if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
+    // if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
         
-        $adminId = $model->routeRequireValidation();
+    //     $adminId = $model->routeRequireValidation();
 
-        if( empty( $adminId ) ) {
-            http_response_code(401);
-            return '{"message":"Wrong or missing Auth Token"}';
-        } 
+    //     if( empty( $adminId ) ) {
+    //         http_response_code(401);
+    //         return '{"message":"Wrong or missing Auth Token"}';
+    //     } 
     
-    }
+    // }
 
     // validation:
     function postValidation( $data ) {
@@ -152,6 +154,13 @@
         
         if( !empty( $id ) && is_numeric( $id ) ) {
 
+            if( $stats->countA() >= 1 ) {
+
+                http_response_code(403);
+                die('{"message": "403 Forbidden"}');
+
+            }
+
             $removeAdmin = $model->deleteAdmin($id);
             
             if( $removeAdmin ) { 
@@ -168,7 +177,7 @@
             
         } else {
 
-             http_response_code(400);
+            http_response_code(400);
             die('{"message": "400 Bad Request"}');
 
         }
