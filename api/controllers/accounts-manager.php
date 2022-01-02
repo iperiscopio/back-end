@@ -9,16 +9,16 @@
     $stats = new Stats();
 
     // Admin authentication through JWT
-    // if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
+    if( in_array($_SERVER["REQUEST_METHOD"], ["GET", "POST", "PUT", "DELETE"]) ) {
         
-    //     $adminId = $model->routeRequireValidation();
+        $adminId = $model->routeRequireValidation();
 
-    //     if( empty( $adminId ) ) {
-    //         http_response_code(401);
-    //         return '{"message":"Wrong or missing Auth Token"}';
-    //     } 
+        if( empty( $adminId ) ) {
+            http_response_code(401);
+            return '{"message":"Wrong or missing Auth Token"}';
+        } 
     
-    // }
+    }
 
     // validation:
     function postValidation( $data ) {
