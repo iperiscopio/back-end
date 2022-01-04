@@ -21,10 +21,14 @@
 
      // Sanitize:
      function sanitize($data) {
+
         if( !empty($data) ) {
             $data["title"] = trim(htmlspecialchars(strip_tags($data["title"]))); 
             $data["location"] = trim(htmlspecialchars(strip_tags($data["location"]))); 
-            $data["description"] = trim(htmlspecialchars(strip_tags($data["description"])));
+            $data["description"] = trim($data["description"]); // <-- removed 
+            // htmlspecialchars(strip_tags($data["description"])) in order to CKEditor 
+            // could save in db html characters and tags, as I'm returning the data bellow
+            // for the next functions
 
             for( $i = 0; $i < count($data["images"]); $i++ ) {
 
@@ -51,7 +55,7 @@
                     mb_strlen($sanitizedData["title"]) <= 250 &&
                     mb_strlen($sanitizedData["location"]) >= 3 &&
                     mb_strlen($sanitizedData["location"]) <= 120 &&
-                    mb_strlen($sanitizedData["description"]) >= 3 &&
+                    mb_strlen($sanitizedData["description"]) >= 10 &&
                     mb_strlen($sanitizedData["description"]) <= 65535
                 ) {
                     
@@ -71,7 +75,7 @@
                         mb_strlen($sanitizedData["title"]) <= 250 &&
                         mb_strlen($sanitizedData["location"]) >= 3 &&
                         mb_strlen($sanitizedData["location"]) <= 120 &&
-                        mb_strlen($sanitizedData["description"]) >= 3 &&
+                        mb_strlen($sanitizedData["description"]) >= 10 &&
                         mb_strlen($sanitizedData["description"]) <= 65535 &&
                         $size > 0 &&
                         $size < 10000000
@@ -134,6 +138,8 @@
         echo json_encode( $model->getAllProjects() );
 
 
+
+
     } elseif($_SERVER["REQUEST_METHOD"] === "POST") { 
 
         $data = json_decode( file_get_contents("php://input"), TRUE );
@@ -174,10 +180,10 @@
                 http_response_code(202);
 
                 echo json_encode( $updateProject );
-
                 die('{"message": "Updated project ' . $id . ', ' . $transformedData["title"] . ' with success"}');
 
             } else {
+
                 http_response_code(404);
                 die('{"message": "404 Not Found"}');
             }
@@ -185,6 +191,7 @@
             
     
         } else {
+            
             http_response_code(400);
             die('{"message": "400 Bad Request"}');
         }
