@@ -7,7 +7,15 @@
         protected $db;
 
         public function __construct() {
-            $this->db = new PDO("mysql:host=localhost;dbname=ilheu_atelier;charset=utf8mb4", "root", "");
+            
+            $this->db = new PDO( 
+                CONFIG["DB_CONNECTION"] . 
+                ':host=' . CONFIG["DB_HOST"] . 
+                ';dbname='  . CONFIG["DB_NAME"] .
+                ';charset=' . CONFIG["DB_CHARSET"] ,
+                CONFIG["ROOT"] ,  
+                CONFIG["PASS"]
+            );
         }
 
         // admin validation 

@@ -27,7 +27,8 @@
         "messages-manager",
         "projects",
         "projects-manager",
-        "siteImages"
+        "siteImages",
+        "sendEmail"
     ];
 
     $controller = $url_parts[2];

@@ -11,12 +11,20 @@ class ComposerStaticInitc50e29fd52eb139d10b719aa3d6d3275
         array (
             'ReallySimpleJWT\\' => 16,
         ),
+        'P' => 
+        array (
+            'PHPMailer\\PHPMailer\\' => 20,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'ReallySimpleJWT\\' => 
         array (
             0 => __DIR__ . '/..' . '/rbdwllr/reallysimplejwt/src',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
     );
 

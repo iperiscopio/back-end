@@ -1,5 +1,6 @@
 {
     "require": {
-        "rbdwllr/reallysimplejwt": "^3.1"
+        "rbdwllr/reallysimplejwt": "^3.1",
+        "phpmailer/phpmailer": "^6.5"
     }
 }
