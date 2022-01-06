@@ -139,8 +139,6 @@
             $finfo = new finfo(FILEINFO_MIME_TYPE);
 
             $detected_format = $finfo->buffer($decoded_attachment);
-            
-            var_dump(in_array($detected_format, $allowed_files_formats));
 
             if(in_array($detected_format, $allowed_files_formats)) {
 
@@ -183,12 +181,14 @@
         if(  validate( $sanitizedData )  && !empty( $admin ) ) {
 
             $sentEmail = $model->sendEmail( $admin, $transformedData );
+            
+            foreach( $transformedData["attachments"] as $attachments ) {
+
+                unlink( $attachments );
+
+            }
 
             if( $sentEmail ) {
-
-                foreach( $transformedData["attachments"] as $attachments ) {
-                    unlink( $attachments );
-                }  
 
                 http_response_code(202);
                 die('{"message":"Email sent with success"}');

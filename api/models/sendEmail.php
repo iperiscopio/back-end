@@ -20,11 +20,11 @@
             $mail->Mailer = "smtp";
 
 
-            $mail->SMTPDebug = 0; // normalmente a 0, mas 4 mostra todas as mensagens, incluindo de erros caso haja
+            $mail->SMTPDebug = 0;
 
             $mail->SMTPAuth = true;
             
-            $mail->SMTPSecure = "tls";
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // <-- - porque estou a usar a porta 587
             
             $mail->CharSet = 'UTF-8';
             
@@ -33,17 +33,23 @@
             $mail->Username = CONFIG["MAIL_USERNAME"];
             $mail->Password = CONFIG["MAIL_PASS"]; 
 
-            // $mail->IsHttp(true);
             
-            $mail->addAddress( $data["email"], $data["name"] );
-
             $mail->setFrom( $admin[0]["email"], 'Ilhéu Atelier' );
 
-            $mail->AddReplyTo( $admin[0]["email"], 'Ilhéu Atelier' );
+            $mail->addAddress( $data["email"], $data["name"] );
+
+            $mail->addReplyTo( $admin[0]["email"], 'Ilhéu Atelier' );
 
             $mail->Subject = $data["subject"];
 
             $mail->msgHTML( $data["message"] );
+
+            for( $i= 0; $i < count($data["attachments"]); $i++ ) { 
+
+                $mail->addAttachment( $data["attachments"][$i] );
+                
+            }
+            
 
             if(!$mail->send()) {
 

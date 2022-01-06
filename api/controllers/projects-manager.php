@@ -177,9 +177,8 @@
             $updateProject = $model->updateProject( $id, $transformedData );
             
             if( $updateProject ) {
+                
                 http_response_code(202);
-
-                echo json_encode( $updateProject );
                 die('{"message": "Updated project ' . $id . ', ' . $transformedData["title"] . ' with success"}');
 
             } else {
