@@ -1,5 +1,7 @@
 <?php
 
+    use ReallySimpleJWT\Token;
+    
     require("models/information.php");
 
     $model = new Info();

@@ -1,21 +1,23 @@
 <?php
 
+    use ReallySimpleJWT\Token;
+    
     require("models/image.php");
 
     $model = new Image();
 
     // admin authentication through JWT
-    // if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
+    if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
         
-    //     $adminId = $model->routeRequireValidation();
+        $adminId = $model->routeRequireValidation();
 
-    //     if( empty( $adminId ) ) {
+        if( empty( $adminId ) ) {
             
-    //         http_response_code(401);
-    //         die('{"message":"Wrong or missing Auth Token"}');
-    //     } 
+            http_response_code(401);
+            die('{"message":"Wrong or missing Auth Token"}');
+        } 
 
-    // }
+    }
 
     if($_SERVER["REQUEST_METHOD"] === "GET") {
 

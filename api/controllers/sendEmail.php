@@ -1,5 +1,7 @@
 <?php
 
+    use ReallySimpleJWT\Token;
+
     require("models/admin.php");
     require("models/sendEmail.php");
 
@@ -18,47 +20,151 @@
     
     }
 
-    // Email validation from admin to client 
-    function validate( $data ) {
+    // Email sanitization from admin to client 
+    function sanitize( $data ) {
 
         if( !empty($data) ) {
 
-            foreach( $data as $key=>$value ) {
-                if($data[$key] = $data["message"]) {
+            $data["message_id"] = trim(htmlspecialchars(strip_tags($data["message_id"])));
+            $data["title"] = trim(htmlspecialchars(strip_tags($data["title"])));
+            $data["name"] = trim(htmlspecialchars(strip_tags($data["name"])));
+            $data["email"] = trim(htmlspecialchars(strip_tags($data["email"])));
+            $data["subject"] = trim(htmlspecialchars(strip_tags($data["subject"])));
+            $data["message"] = trim($data["message"]);
 
-                    $data[$key] = trim($value);
+            for( $i = 0; $i < count($data["attachments"]); $i++ ) {
 
-                } else {
+                $sanitize = trim(htmlspecialchars(strip_tags($data["attachments"][$i])));
 
-                    $data[$key] = trim(htmlspecialchars(strip_tags($value)));
-
-                }
             }
 
-            if( 
-                !empty($data["message_id"]) &&
-                !empty($data["title"]) &&
-                !empty($data["name"]) &&
-                !empty($data["email"]) &&
-                !empty($data["subject"]) &&
-                !empty($data["message"]) &&
-                is_numeric($data["message_id"]) &&
-                mb_strlen($data["title"]) >= 2 &&
-                mb_strlen($data["title"]) <= 3 &&
-                mb_strlen($data["name"]) >= 3 &&
-                mb_strlen($data["name"]) <= 255 &&
-                filter_var($data["email"], FILTER_VALIDATE_EMAIL) &&
-                mb_strlen($data["subject"]) >= 3 &&
-                mb_strlen($data["subject"]) <= 250 &&
-                mb_strlen($data["message"]) >= 10 &&
-                mb_strlen($data["message"]) <= 65535
-            ) {
-                return true;
-            }
-   
+            return $data;
         }
 
         return false;
+    }
+
+    // Email validation from admin to client 
+    function validate( $sanitizedData ) {
+
+        if( !empty($sanitizedData) ) {
+
+            if( empty($sanitizedData["attachments"]) ) {
+
+                if( 
+                    !empty($sanitizedData["message_id"]) &&
+                    !empty($sanitizedData["title"]) &&
+                    !empty($sanitizedData["name"]) &&
+                    !empty($sanitizedData["email"]) &&
+                    !empty($sanitizedData["subject"]) &&
+                    !empty($sanitizedData["message"]) &&
+                    is_numeric($sanitizedData["message_id"]) &&
+                    mb_strlen($sanitizedData["title"]) >= 2 &&
+                    mb_strlen($sanitizedData["title"]) <= 3 &&
+                    mb_strlen($sanitizedData["name"]) >= 3 &&
+                    mb_strlen($sanitizedData["name"]) <= 255 &&
+                    filter_var($sanitizedData["email"], FILTER_VALIDATE_EMAIL) &&
+                    mb_strlen($sanitizedData["subject"]) >= 3 &&
+                    mb_strlen($sanitizedData["subject"]) <= 250 &&
+                    mb_strlen($sanitizedData["message"]) >= 10 &&
+                    mb_strlen($sanitizedData["message"]) <= 65535
+                ) {
+                    return true;
+                }
+
+            } else {
+
+                for( $i = 0; $i < count($sanitizedData["attachments"]); $i++ ) {
+
+                    $size = strlen($sanitizedData["attachments"][$i]);
+
+                    if( 
+                        !empty($sanitizedData["message_id"]) &&
+                        !empty($sanitizedData["title"]) &&
+                        !empty($sanitizedData["name"]) &&
+                        !empty($sanitizedData["email"]) &&
+                        !empty($sanitizedData["subject"]) &&
+                        !empty($sanitizedData["message"]) &&
+                        is_numeric($sanitizedData["message_id"]) &&
+                        mb_strlen($sanitizedData["title"]) >= 2 &&
+                        mb_strlen($sanitizedData["title"]) <= 3 &&
+                        mb_strlen($sanitizedData["name"]) >= 3 &&
+                        mb_strlen($sanitizedData["name"]) <= 255 &&
+                        filter_var($sanitizedData["email"], FILTER_VALIDATE_EMAIL) &&
+                        mb_strlen($sanitizedData["subject"]) >= 3 &&
+                        mb_strlen($sanitizedData["subject"]) <= 250 &&
+                        mb_strlen($sanitizedData["message"]) >= 10 &&
+                        mb_strlen($sanitizedData["message"]) <= 65535 &&
+                        $size > 0 &&
+                        $size < 25000000
+                    ) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+    // Transform attachments data:
+    function attachmentsTransformation($sanitizedData) {
+    
+        $target_dir = "../uploads/";
+
+        $allowed_files_formats = [
+            "pdf" => "application/pdf",
+            "odt" => "application/vnd.oasis.opendocument.text",
+            "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "doc" => "application/msword",
+            "xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "xls" => "application/vnd.ms-excel",
+            "ppt" => "application/vnd.ms-powerpoint",
+            "pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "rar" => "application/x-rar-compressed",
+            "zip" => "application/zip",
+            "txt" => "text/plain",
+            "jpg" => "image/jpeg",
+            "png" => "image/png",
+            "gif" => "image/gif",
+            "webp" => "image/webp",
+            // "svg" => "image/svg+xml" <-- removed because PHP MIME TYPE returned "image/svg" instead of "image/svg+xml"
+        ];
+        
+        for( $i = 0; $i < count($sanitizedData["attachments"]); $i++ ) {
+
+            $decoded_attachment = base64_decode($sanitizedData["attachments"][$i]);
+
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+
+            $detected_format = $finfo->buffer($decoded_attachment);
+            
+            var_dump(in_array($detected_format, $allowed_files_formats));
+
+            if(in_array($detected_format, $allowed_files_formats)) {
+
+                $filename = $sanitizedData["name"] . "_" . $sanitizedData["subject"] . "_" . bin2hex(random_bytes(1));
+
+                $extension = "." . array_search($detected_format, $allowed_files_formats);
+
+                $file_dir = $target_dir . $filename . $extension;
+
+                $temp = file_put_contents( $file_dir, $decoded_attachment );
+                
+                if( $temp ) {
+
+                    $finfo = finfo_open(FILEINFO_NONE);
+                    $tempFile = finfo_file( $finfo, $file_dir );
+
+                }
+            }
+                
+            
+            $sanitizedData["attachments"][$i] = $file_dir;
+        }
+        
+        return $sanitizedData;
     }
 
 
@@ -69,13 +175,20 @@
         $admin = $findAdmin->adminInfo( $adminId );
         
         $data = json_decode(file_get_contents("php://input"), TRUE);
-        
 
-        if(  validate( $data )  && !empty( $admin ) ) {
+        $sanitizedData = sanitize($data);
 
-            $sendEmail = $model->sendEmail( $admin, $data );
+        $transformedData = attachmentsTransformation($sanitizedData);
 
-            if( $sendEmail ) {
+        if(  validate( $sanitizedData )  && !empty( $admin ) ) {
+
+            $sentEmail = $model->sendEmail( $admin, $transformedData );
+
+            if( $sentEmail ) {
+
+                foreach( $transformedData["attachments"] as $attachments ) {
+                    unlink( $attachments );
+                }  
 
                 http_response_code(202);
                 die('{"message":"Email sent with success"}');

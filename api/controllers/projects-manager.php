@@ -33,7 +33,7 @@
             for( $i = 0; $i < count($data["images"]); $i++ ) {
 
                 $sanitize = trim(htmlspecialchars(strip_tags($data["images"][$i])));
-                $data["images"][$i] = str_replace("data:image/jpeg;base64,", "", $sanitize);
+
             } 
             
             return $data;
@@ -103,7 +103,7 @@
             "png" => "image/png",
             "gif" => "image/gif",
             "webp" => "image/webp",
-            "svg" => "image/svg+xml"
+            // "svg" => "image/svg+xml" <-- removed because PHP MIME TYPE returned "image/svg" instead of "image/svg+xml"
         ];
 
         for( $i = 0; $i < count($sanitizedData["images"]); $i++ ) {

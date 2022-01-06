@@ -1,5 +1,7 @@
 <?php
 
+    use ReallySimpleJWT\Token;
+
     require("models/clientsMessages.php");
 
     $model = new ClientsMessages();
