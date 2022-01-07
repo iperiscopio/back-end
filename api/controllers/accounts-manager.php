@@ -117,7 +117,7 @@
         } else {
 
             http_response_code(400);
-            echo '{"message":"Wrong Information"}';
+            die('{"message": "Wrong Information"}');
             
         }
         
@@ -144,7 +144,7 @@
         } else {
 
             http_response_code(400);
-            echo '{"message":"Wrong Information"}';
+            die('{"message": "Wrong Information"}');;
             
         }
 
@@ -157,7 +157,7 @@
         
         if( !empty( $id ) && is_numeric( $id ) ) {
 
-            if( $stats->countA() >= 1 ) {
+            if( $stats->countA() <= 1 ) {
 
                 http_response_code(403);
                 die('{"message": "403 Forbidden"}');
@@ -193,5 +193,5 @@
 
     } else {
         http_response_code(405);
-        echo '{"message":"Method Not Allowed"}';
+        die('{"message":"Method Not Allowed"}');
     }

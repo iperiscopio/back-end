@@ -68,8 +68,9 @@
 
 
         } else {
+            
             http_response_code(400);
-            echo '{"message":"Wrong information"}';
+            die('{"message":"Wrong information"}');
         }
         
         
@@ -79,6 +80,7 @@
         http_response_code(202);
 
     } else {
+
         http_response_code(405);
-        echo '{"message":"Method Not Allowed"}';
+        die('{"message":"Method Not Allowed"}');
     }

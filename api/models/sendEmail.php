@@ -24,7 +24,7 @@
 
             $mail->SMTPAuth = true;
             
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // <-- - porque estou a usar a porta 587
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // <-- using port 587
             
             $mail->CharSet = 'UTF-8';
             

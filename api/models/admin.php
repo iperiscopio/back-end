@@ -129,7 +129,6 @@
             ");
 
             $id = $query->execute([ $id ]);
-            var_dump($id);
 
             return $id;
         }

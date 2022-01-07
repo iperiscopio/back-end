@@ -52,9 +52,6 @@
         }
 
         public function matched( $user_ip, $user_captcha ) {
-    
-            var_dump("ip " . $user_ip);
-            var_dump("captcha " . $user_captcha);
 
             $query = $this->db->prepare("
                 SELECT
@@ -71,8 +68,6 @@
             ]);
             
             $matched = $query->fetch( PDO::FETCH_ASSOC );
-            var_dump($matched);
-            
 
             if( $matched ) {
                 return true;
