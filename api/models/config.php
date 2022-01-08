@@ -30,6 +30,7 @@
             }
 
             if( empty($token) ) {
+                http_response_code(401);
                 die('{"message":"User not authenticated. Not allowed to perform this action"}');
             }
 
