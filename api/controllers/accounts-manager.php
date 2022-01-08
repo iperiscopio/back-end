@@ -86,7 +86,7 @@
 
         
 
-    } elseif( $_SERVER["REQUEST_METHOD"] === "POST") {
+    } else if( $_SERVER["REQUEST_METHOD"] === "POST") {
 
         $data = json_decode( file_get_contents("php://input"), true );
 
@@ -123,7 +123,7 @@
         
         
 
-    } elseif($_SERVER["REQUEST_METHOD"] === "PUT") {
+    } else if($_SERVER["REQUEST_METHOD"] === "PUT") {
 
         $data = json_decode( file_get_contents("php://input"), true );
 
@@ -151,7 +151,7 @@
 
 
 
-    } elseif($_SERVER["REQUEST_METHOD"] === "DELETE") {
+    } else if($_SERVER["REQUEST_METHOD"] === "DELETE") {
 
         $data = json_decode( file_get_contents("php://input"), TRUE );
         
@@ -187,7 +187,7 @@
 
 
 
-    } elseif($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
+    } else if($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
 
         http_response_code(202);
 

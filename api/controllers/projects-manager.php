@@ -7,7 +7,7 @@
     $model = new Project();
 
     // admin authentication through JWT
-    if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
+    if( in_array($_SERVER["REQUEST_METHOD"], ["GET", "POST", "PUT", "DELETE"]) ) {
         
         $adminId = $model->routeRequireValidation();
 

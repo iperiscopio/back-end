@@ -6,7 +6,7 @@
 
     $model = new ClientsMessages();
 
-    if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
+    if( in_array($_SERVER["REQUEST_METHOD"], ["GET", "DELETE"]) ) {
         
         $adminId = $model->routeRequireValidation();
 

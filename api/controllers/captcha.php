@@ -47,7 +47,7 @@
         
 
 
-    } elseif( $_SERVER["REQUEST_METHOD"] === "POST" ){
+    } else if( $_SERVER["REQUEST_METHOD"] === "POST" ){
 
         $userIp = $_SERVER["REMOTE_ADDR"];
 
@@ -79,7 +79,7 @@
 
 
 
-    } elseif($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
+    } else if($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
         http_response_code(202);
 
     } else {

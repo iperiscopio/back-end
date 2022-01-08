@@ -7,7 +7,7 @@
     $model = new Image();
 
     // admin authentication through JWT
-    if( in_array($_SERVER["REQUEST_METHOD"], ["POST", "PUT", "DELETE"]) ) {
+    if( in_array($_SERVER["REQUEST_METHOD"], ["GET", "DELETE"]) ) {
         
         $adminId = $model->routeRequireValidation();
 
@@ -51,7 +51,7 @@
 
         }
 
-    } elseif($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
+    } else if($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
         http_response_code(202);
     } else {
 

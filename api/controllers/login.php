@@ -49,7 +49,7 @@
                 "email" => $admin["email"],
                 "name" => $admin["name"],
                 "iat" => time(),
-                "exp" => time() + (60 * 120)
+                "exp" => time() + (60 * 120) // 2 hours
             ];
 
             $secret = CONFIG["SECRET_KEY"];
@@ -63,7 +63,8 @@
 
             echo json_encode([ 
                 "message" => "You are now logged in",
-                "token" => $token
+                "token" => $token,
+                "exp" => $payload["exp"]
             ]);
 
 

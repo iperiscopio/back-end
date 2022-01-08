@@ -28,6 +28,11 @@
                     $token = trim( $value );
                 }
             }
+
+            if( empty($token) ) {
+                die('{"message":"User not authenticated. Not allowed to perform this action"}');
+            }
+
             // Token validation
             $secret = CONFIG["SECRET_KEY"];
             

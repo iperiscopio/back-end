@@ -1,8 +1,22 @@
 <?php
 
+    use ReallySimpleJWT\Token;
+
     require("models/stats.php");
 
     $model = new Stats();
+
+    // Admin authentication through JWT
+    if( in_array($_SERVER["REQUEST_METHOD"], ["GET"]) ) {
+        
+        $adminId = $model->routeRequireValidation();
+
+        if( empty( $adminId ) ) {
+            http_response_code(401);
+            return '{"message":"Wrong or missing Auth Token"}';
+        } 
+    
+    }
 
     if( $_SERVER["REQUEST_METHOD"] === "GET") {
 
