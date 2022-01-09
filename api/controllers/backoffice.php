@@ -32,11 +32,7 @@
         echo json_encode($counts);
 
 
-    }  elseif($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
-
-        http_response_code(202);
-
-    } else {
+    }   else {
         
         http_response_code(405);
         die('{"message":"Method Not Allowed"}');
