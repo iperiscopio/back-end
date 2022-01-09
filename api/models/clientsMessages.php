@@ -32,23 +32,20 @@
         
         
         public function createMessage( $client ) {
-            // Insert Client Info
+            // Check if client already exists
             $query = $this->db->prepare("
-                INSERT INTO clients
-                (name, title, email, telephone)
-                VALUES(?, ?, ?, ?)
+                SELECT 
+                    email,
+                    client_id
+                FROM clients
+                WHERE email = ?
             ");
+
+            $query->execute([ $client["email"] ]);
+            $regClient = $query->fetch( PDO::FETCH_ASSOC );
             
-            $query->execute([
-                $client["name"],
-                $client["title"],
-                $client["email"],
-                $client["telephone"],
-            ]);
-
-            $newClient = $this->db->lastInsertId();
-
-            if( $newClient ) {
+            
+            if( $regClient["client_id"] ) {
                 // Insert Client Message
                 $query = $this->db->prepare("
                     INSERT INTO messages
@@ -57,10 +54,43 @@
                 ");
                 
                 $query->execute([
-                    $newClient,
+                    $regClient["client_id"],
                     $client["message"]
                 ]);
+
+            } else {
+                // Insert Client Info
+                $query = $this->db->prepare("
+                    INSERT INTO clients
+                    (name, title, email, telephone)
+                    VALUES(?, ?, ?, ?)
+                ");
+                
+                $query->execute([
+                    $client["name"],
+                    $client["title"],
+                    $client["email"],
+                    $client["telephone"],
+                ]);
+
+                $newClient = $this->db->lastInsertId();
+
+                if( $newClient ) {
+                    // Insert Client Message
+                    $query = $this->db->prepare("
+                        INSERT INTO messages
+                        (client_id, message)
+                        VALUES(?, ?)
+                    ");
+                    
+                    $query->execute([
+                        $newClient,
+                        $client["message"]
+                    ]);
+                }
             }
+
+            
         }
 
 
